@@ -1,6 +1,8 @@
 package com.flairstech.countryinformation.service;
 
 import com.flairstech.countryinformation.entities.Country;
+import com.flairstech.countryinformation.exception.CountryNotFoundException;
+import com.flairstech.countryinformation.exception.DBConnectionException;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -17,7 +19,7 @@ public class CountryService {
     @Autowired
     JdbcTemplate jdbcTemplate;
 
-    public Country getCountryInfo(String code) throws Exception {
+    public Country getCountryInfo(String code) {
         try {
             String countrySQL = "Select name, continent, population, life_expectancy, lang.language "
                     + "From country cou "
@@ -32,10 +34,10 @@ public class CountryService {
             if (countries != null && !countries.isEmpty()) {
                 return countries.get(0);
             } else {
-                throw new Exception("INVALID_COUNTRY_CODE");
+                throw new CountryNotFoundException("INVALID_COUNTRY_CODE");
             }
         } catch (DataAccessException e) {
-            throw new Exception("INTERNAL_ERROR");
+            throw new DBConnectionException("INTERNAL_ERROR");
         }
     }
 }
